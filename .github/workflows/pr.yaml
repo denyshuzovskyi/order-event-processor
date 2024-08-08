@@ -16,24 +16,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Update APT package list
+        run: sudo apt-get update
+
+      - name: Install Docker Compose
+        run: sudo apt-get install docker-compose -y
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.20'
+          go-version: '1.22.5'
+
+      - name: Install dependencies
+        run: go mod download
 
       - name: Run unit tests
         run: go test ./internal/...
 
       - name: Start services
-        run: |
-          docker-compose -f .ci/docker-compose.yml up -d
-          docker-compose -f .ci/docker-compose.yml wait postgres
+        run: docker-compose -f .ci/docker-compose.yml up -d --force-recreate --build
 
-      - name: Install dependencies
-        run: go mod download
+      - name: Wait for services
+        run: sleep 50s
 
       - name: Run end-to-end tests
-        run: go test ./...
+        run: go test ./test/...
         env:
           DATABASE_URL: postgres://testuser:testpassword@localhost:35432/testdb?sslmode=disable
           ENV: CI

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"hash/fnv"
 	"order-event-processor/internal/model"
 )
 
@@ -32,9 +33,12 @@ func (s *Storage) RunInTransaction(run func()) error {
 
 func (s *Storage) AcquireLock(id string) error {
 	const op = "storage.postgresql.SaveEvent"
+	h := fnv.New32a()
+	h.Write([]byte(id))
+	sum32 := h.Sum32()
 
 	query := `SELECT pg_advisory_xact_lock($1)`
-	_, err := s.pool.Exec(context.Background(), query, id)
+	_, err := s.pool.Exec(context.Background(), query, sum32)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}

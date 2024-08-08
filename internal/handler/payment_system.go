@@ -149,11 +149,11 @@ func (h *PaymentSystemEventHandler) getUpdatedInOrderEvents(orderEvents []model.
 	currentStatus := model.StatusInitial
 	isFinalized := false
 	for _, event := range orderEvents {
+		statuses := transitions[currentStatus]
 		if event.InOrder {
 			currentStatus = event.OrderStatus
 			continue
 		}
-		statuses := transitions[currentStatus]
 		if isFinalized {
 			return nil, fmt.Errorf("invalid broadcaster %s, after final status", event.EventID)
 		} else if slices.Contains(statuses, event.OrderStatus) {

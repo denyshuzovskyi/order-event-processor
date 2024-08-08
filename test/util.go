@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -29,6 +30,8 @@ func ExecuteScenario(t *testing.T, path string, timeoutBeforeListeningStream tim
 		t.Fatal(err)
 	}
 	orderId := getOrderId(files[0].Content, t)
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
 		time.Sleep(timeoutBeforeListeningStream * time.Millisecond)
 		resp, err := http.Get(fmt.Sprintf("%s/orders/%s/events", url, orderId))
@@ -46,7 +49,6 @@ func ExecuteScenario(t *testing.T, path string, timeoutBeforeListeningStream tim
 		for {
 			line, err := reader.ReadString('\n')
 			if err != nil {
-				t.Error(err)
 				break
 			}
 
@@ -70,6 +72,10 @@ func ExecuteScenario(t *testing.T, path string, timeoutBeforeListeningStream tim
 			}
 			index++
 		}
+		if index != len(expectedEventIdsInOrder) {
+			t.Error(fmt.Errorf("expected events count to be %d but got %d", len(expectedEventIdsInOrder), index))
+		}
+		wg.Done()
 	}()
 	for _, file := range files {
 		time.Sleep(file.Timeout * time.Millisecond)
@@ -85,6 +91,8 @@ func ExecuteScenario(t *testing.T, path string, timeoutBeforeListeningStream tim
 			t.Error(err)
 		}
 	}
+
+	wg.Wait()
 }
 
 func clearDb(t *testing.T) {

@@ -10,6 +10,7 @@ func TestInOrder(t *testing.T) {
 		"483ec8f8-4864-427b-a878-ca026fd38f01",
 		"483ec8f8-4864-427b-a878-ca026fd38f02",
 		"483ec8f8-4864-427b-a878-ca026fd38f03",
+		"483ec8f8-4864-427b-a878-ca026fd38f03",
 	})
 }
 
@@ -19,6 +20,7 @@ func TestNotInOrder(t *testing.T) {
 		"483ec8f8-4864-427b-a878-ca026fd38f01",
 		"483ec8f8-4864-427b-a878-ca026fd38f02",
 		"483ec8f8-4864-427b-a878-ca026fd38f03",
+		"483ec8f8-4864-427b-a878-ca026fd38f03",
 	})
 }
 
@@ -27,6 +29,7 @@ func TestNotInOrderAndInTheMiddleOfStream(t *testing.T) {
 		"483ec8f8-4864-427b-a878-ca026fd38f00",
 		"483ec8f8-4864-427b-a878-ca026fd38f01",
 		"483ec8f8-4864-427b-a878-ca026fd38f02",
+		"483ec8f8-4864-427b-a878-ca026fd38f03",
 		"483ec8f8-4864-427b-a878-ca026fd38f03",
 	})
 }

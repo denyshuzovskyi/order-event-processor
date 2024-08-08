@@ -1,6 +1,7 @@
 env: "local"
 server:
-  host: "localhost"
+  host: "0.0.0.0"
   port: "8080"
 datasource:
-  url: postgres://user:password@localhost:5432/order-events
+  url: postgres://user:password@localhost:5432/order-events?sslmode=disable
+#  url: postgres://testuser:testpassword@localhost:35432/testdb?sslmode=disable

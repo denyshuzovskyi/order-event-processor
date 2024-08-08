@@ -49,7 +49,7 @@ func (b *OrderEventBroadcaster) UnregisterChannel(orderId string, channel chan *
 	}
 	index := slices.Index(channels, channel)
 	if index >= 0 {
-		b.orderIdToChannels[orderId] = slices.Delete(channels, index, index)
+		b.orderIdToChannels[orderId] = slices.Delete(channels, index, index+1)
 	}
 }
 

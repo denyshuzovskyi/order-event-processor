@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+
+      - name: Run unit tests
+        run: go test ./internal/...
+
+      - name: Start services
+        run: |
+          docker-compose -f .ci/docker-compose.yml up -d
+          docker-compose -f .ci/docker-compose.yml wait postgres
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run end-to-end tests
+        run: go test ./...
+        env:
+          DATABASE_URL: postgres://testuser:testpassword@localhost:35432/testdb?sslmode=disable
+          ENV: CI

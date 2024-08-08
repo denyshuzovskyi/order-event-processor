@@ -1,0 +1,6 @@
+env: "local"
+server:
+  host: "localhost"
+  port: "8080"
+datasource:
+  url: postgres://user:password@localhost:5432/order-events

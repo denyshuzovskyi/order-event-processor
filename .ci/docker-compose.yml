@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: postgres_test
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - "35432:5432"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "testuser"]
+      interval: 10s
+      retries: 5
+
+  app-runner:
+    build:
+      context: ../
+      dockerfile: ./.ci/app.Dockerfile
+    container_name: app_runner
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://testuser:testpassword@postgres_test:35432/testdb?sslmode=disable
+    networks:
+      - test-network
+#
+#  tests-runner:
+#    build:
+#      context: ../
+#      dockerfile: ./.ci/tests.Dockerfile
+#    container_name: app_runner
+#    depends_on:
+#      app-runner:
+#        condition: service_started
+#    networks:
+#      - test-network
+
+networks:
+  test-network:
+    driver: bridge
+

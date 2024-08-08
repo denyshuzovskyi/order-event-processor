@@ -1,0 +1,14 @@
+services:
+  postgresql:
+    container_name: order-broadcaster-processor-postgresql
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order-events
+      - POSTGRES_PORT=5432
+    restart: no
+    ports:
+      - "5432:5432"
+
+
